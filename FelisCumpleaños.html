@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cuenta regresiva</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      padding: 16px;
+    }
+
+    #countdown {
+      font-size: 1.5rem;
+      margin-top: 12px;
+    }
+
+    .time-part {
+      display: inline-block;
+      margin: 0 8px;
+    }
+
+    .number {
+      font-size: 2.2rem;
+      font-weight: bold;
+      display: block;
+    }
+
+    #birthday-content {
+      display: none; /* oculto hasta que llegue la fecha */
+      margin-top: 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Texto que verá ANTES del cumpleaños -->
+    <h1>Algo especial se está preparando… 🎁</h1>
+    <p>Falta muy poquito, no mires antes de tiempo 😌</p>
+
+    <!-- Contador -->
+    <div id="countdown">
+      <div class="time-part">
+        <span class="number" id="days">0</span>días
+      </div>
+      <div class="time-part">
+        <span class="number" id="hours">0</span>horas
+      </div>
+      <div class="time-part">
+        <span class="number" id="minutes">0</span>min
+      </div>
+      <div class="time-part">
+        <span class="number" id="seconds">0</span>seg
+      </div>
+    </div>
+
+    <!-- CONTENIDO DEL CUMPLE (lo editas a tu gusto) -->
+    <div id="birthday-content">
+      <h1>¡Feliz cumpleaños! 🎂✨</h1>
+      <p>
+        Aquí pones todo tu diseño: fotos, animaciones, mensajes largos,
+        lo que normalmente haces en tu HTML bonito.
+      </p>
+      <!-- Puedes pegar aquí el HTML del diseño final -->
+    </div>
+  </div>
+
+  <script>
+    // 1) AJUSTA AQUÍ la fecha/hora del cumpleaños
+    // Formato: new Date("YYYY-MM-DDTHH:MM:SS")
+    // Ejemplo: 2026-06-29 a las 00:00 (hora de Lima, ajusta según tu caso)
+    const targetDate = new Date("2026-06-29T00:00:00");
+
+    const countdownEl = document.getElementById("countdown");
+    const birthdayContentEl = document.getElementById("birthday-content");
+
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        // Llegó la hora del cumpleaños
+        countdownEl.style.display = "none";
+        birthdayContentEl.style.display = "block";
+        clearInterval(intervalId);
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / (3600 * 24));
+      const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      daysEl.textContent = days;
+      hoursEl.textContent = String(hours).padStart(2, "0");
+      minutesEl.textContent = String(minutes).padStart(2, "0");
+      secondsEl.textContent = String(seconds).padStart(2, "0");
+    }
+
+    const intervalId = setInterval(updateCountdown, 1000);
+    updateCountdown(); // primera ejecución inmediata
+  </script>
+</body>
+</html>
