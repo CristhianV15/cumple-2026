@@ -203,13 +203,7 @@
       align-items: center;
     }
 
-    @media (max-width: 700px) {
-      .scene-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Fotos tipo collage (base) */
+    /* Fotos tipo collage (base escritorio) */
     .scene-photos {
       position: relative;
       min-height: 230px;
@@ -375,6 +369,38 @@
     .final-scene-text .story-footer-strong {
       font-weight: 600;
     }
+
+    /* Ajustes móviles: texto y fotos en columna, sin solaparse */
+    @media (max-width: 700px) {
+      .scene-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .scene-photos {
+        position: static;
+        min-height: auto;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .scene-photo-card {
+        position: static;
+        width: 32%;
+        max-width: none;
+        transform: none !important;
+        opacity: 0;
+      }
+
+      .scene-photo-card.visible-photo {
+        opacity: 1;
+      }
+
+      .scene-photo-label {
+        font-size: 0.65rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -481,7 +507,7 @@
   </main>
 
   <script>
-    // AJUSTA AQUÍ la fecha/hora del cumpleaños
+    
     const targetDate = new Date("2026-06-28T00:00:00");
 
     const bodyEl = document.body;
@@ -529,7 +555,7 @@
       {
         title: "Desde que llegaste tú",
         text:
-          "Desde que llegaste tú, mis días cambiaron. Ahora ya no es solo código y pantallas. Ahora hay risas que se nos escapan en los momentos menos esperados, memes que solo tú y yo entendemos, audios eternos contando cómo nos fue en el día.\n\n" +
+          "Desde que llegaste tú, mis días cambiaron. Ahora ya no es solo código y pantallas. Ahora hay risas que se nos escapan en los momentos menos esperados, memes que solo tú y yo entendemos (como los alias de Jimmy y Claudia xd), audios eternos contando cómo nos fue en el día.\n\n" +
           "Están nuestras fotos, que nunca salen perfectas, pero que me encantan porque sales tú. Están los viajes, las salidas improvisadas, los días de trabajo juntos, los conciertos y todos esos pequeños momentos que ahora se sienten tan nuestros.\n\n" +
           "También están esas cartas que te he ido escribiendo, una por día, un pedacito de lo que siento en cada hoja. Porque siempre voy a buscar maneras de recordarte cuánto significas para mí y de hacerte feliz, como tú me haces a mí.",
         photos: [
@@ -542,7 +568,7 @@
         title: "Feliz cumpleaños",
         text:
           "Y hoy no es cualquier día. Hoy es tu cumpleaños, y eso para mí significa celebrar que existes, que estás aquí, y que por alguna razón bonita la vida decidió cruzarte en mi camino.\n\n" +
-          "Gracias por cada risa que me has regalado, por cada mensaje inesperado, por cada “como vas?”, “plena confianza en ti”,  cuando tuve un día pesado. Gracias por hacer que mis días, que ya eran buenos, ahora sean mucho mejores.\n\n" +
+          "Gracias por cada risa que me has regalado, por cada mensaje inesperado, por cada “como vas?”, “plena confianza en ti”, cuando tuve un día pesado. Gracias por hacer que mis días, que ya eran buenos, ahora sean mucho mejores.\n\n" +
           "Por todo eso, lo único que quiero es que hoy la pases increíble. Que te sientas querida, cuidada, engreída, y que sepas que detrás de esta pequeña sorpresa hay alguien que piensa mucho en ti y que siempre va a hacer todo lo posible por verte feliz.",
         photos: [
           { src: "img/escena3-1.jpg", label: "La cumpleañera más linda" },
@@ -646,31 +672,30 @@
       if (typingIntervalId) clearInterval(typingIntervalId);
 
       const fullText = scene.text;
-      const typingSpeed = 40; // ms por carácter
+      const typingSpeed = 47; 
 
       typingIntervalId = setInterval(() => {
         if (currentCharIndex >= fullText.length) {
           clearInterval(typingIntervalId);
 
-          // Asegurar que todas las fotos estén visibles al final
           photoCard1.classList.add("visible-photo");
           photoCard2.classList.add("visible-photo");
           photoCard3.classList.add("visible-photo");
 
           if (currentSceneIndex < scenes.length - 1) {
-            // Pausa más larga antes de la siguiente escena
             setTimeout(() => {
               startScene(currentSceneIndex + 1);
-            }, 5000);
+            }, 7000);
           } else {
-            // Escena 4 terminada -> mostrar escena 5 (final SOLO)
+            // Antes 2000ms, ahora 4000ms
             setTimeout(() => {
               sceneCursor.style.display = "none";
               sceneLayout.style.display = "none";
               sceneProgressIndicator.style.display = "none";
+              sceneTitleText.textContent = ""; // ← oculta el título "A dónde vamos"
               finalScene.style.display = "block";
               finalScene.scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 2000);
+            }, 4000);
           }
           return;
         }
@@ -679,7 +704,6 @@
         sceneTextContent.textContent += nextChar;
         currentCharIndex++;
 
-        // Progreso para ir mostrando fotos
         const progress = currentCharIndex / fullText.length;
         if (progress > 0.25) {
           photoCard1.classList.add("visible-photo");
@@ -694,7 +718,6 @@
     }
 
     function playStory() {
-      // Activar modo "pantalla nueva"
       bodyEl.classList.add("story-mode");
       cardRoot.classList.add("show-story");
       storyContainer.style.display = "block";
@@ -702,7 +725,6 @@
       // Scroll al inicio de la historia
       storyContainer.scrollIntoView({ behavior: "smooth", block: "start" });
 
-      // Iniciar desde la primera escena
       startScene(0);
     }
 
