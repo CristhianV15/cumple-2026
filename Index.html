@@ -2,108 +2,547 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Feliz cumpleaños</title>
+  <title>Cuenta regresiva ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      text-align: center;
+      background: radial-gradient(circle at top, #4c1d95, #020617);
+      color: #fdf2f8;
     }
 
-    .container {
-      max-width: 600px;
-      padding: 16px;
+    .page {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px 16px 32px;
     }
 
-    #countdown {
-      font-size: 1.5rem;
-      margin-top: 12px;
+    .card {
+      background: rgba(24, 16, 48, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.8);
+      padding: 24px 20px 28px;
+      border: 1px solid rgba(244, 114, 182, 0.35);
+      backdrop-filter: blur(20px);
+      max-height: 90vh;
+      overflow-y: auto;
+      transition: max-height 0.4s ease, padding 0.4s ease, border-radius 0.4s ease;
     }
 
-    .time-part {
-      display: inline-block;
-      margin: 0 8px;
+    /* Modo historia "pantalla nueva" */
+    .story-mode .card {
+      max-height: none;
+      min-height: 90vh;
+      border-radius: 24px;
     }
 
-    .number {
-      font-size: 2.2rem;
-      font-weight: bold;
-      display: block;
-    }
-
-    #birthday-content {
-      display: none; /* oculto hasta que llegue la fecha */
-      margin-top: 24px;
+    .pre-header {
+      font-size: 0.85rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #f9a8d4;
+      margin-bottom: 6px;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      line-height: 1.15;
       margin-bottom: 8px;
+      color: #fdf2f8;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #fbcfe8;
+      margin-bottom: 18px;
+    }
+
+    .countdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .time-box {
+      flex: 1 1 90px;
+      min-width: 80px;
+      background: radial-gradient(circle at top, #4c1d95, #111827);
+      border-radius: 16px;
+      padding: 10px 10px 12px;
+      text-align: center;
+      border: 1px solid rgba(248, 113, 113, 0.5);
+    }
+
+    .time-number {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #f9a8d4;
+      margin-bottom: 2px;
+    }
+
+    .time-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #fecaca;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    .photos-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .photo {
+      flex: 0 0 30%;
+      min-width: 110px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(248, 113, 113, 0.5);
+      position: relative;
+      background: #020617;
+    }
+
+    .photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-label {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      background: rgba(24, 16, 48, 0.8);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.7rem;
+      color: #fdf2f8;
+      backdrop-filter: blur(8px);
+    }
+
+    .tiny-note {
+      font-size: 0.75rem;
+      color: #e5e7eb;
+      margin-bottom: 10px;
+    }
+
+    .watch-button {
+      margin-top: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #f97316, #ec4899);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(236, 72, 153, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .watch-button span {
+      font-size: 1rem;
+    }
+
+    .watch-button.hidden {
+      display: none;
+    }
+
+    /* Ocultar la parte del contador en modo historia (pantalla nueva) */
+    .story-mode #countdown-section {
+      display: none;
+    }
+
+    /* Contenedor del "video" de escenas */
+    #story-container {
+      display: none;
+      margin-top: 18px;
+      border-top: 1px dashed rgba(248, 113, 113, 0.6);
+      padding-top: 16px;
+    }
+
+    .show-story #story-container {
+      display: block;
+    }
+
+    .scene-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: #fdf2f8;
+      text-align: center;
+    }
+
+    .scene-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+      gap: 22px;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) {
+      .scene-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Fotos tipo collage */
+    .scene-photos {
+      position: relative;
+      min-height: 220px;
+    }
+
+    .scene-photo-card {
+      position: absolute;
+      width: 65%;
+      max-width: 240px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.8);
+      background: #020617;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .scene-photo-card.visible-photo {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .scene-photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .scene-photo-card:nth-child(1) {
+      top: 0;
+      left: 6%;
+      transform: rotate(-6deg) scale(0.9);
+    }
+
+    .scene-photo-card:nth-child(1).visible-photo {
+      transform: rotate(-6deg) scale(1);
+    }
+
+    .scene-photo-card:nth-child(2) {
+      top: 18%;
+      right: 0;
+      transform: rotate(4deg) scale(0.9);
+    }
+
+    .scene-photo-card:nth-child(2).visible-photo {
+      transform: rotate(4deg) scale(1);
+    }
+
+    .scene-photo-card:nth-child(3) {
+      bottom: 0;
+      left: 16%;
+      transform: rotate(-2deg) scale(0.9);
+    }
+
+    .scene-photo-card:nth-child(3).visible-photo {
+      transform: rotate(-2deg) scale(1);
+    }
+
+    .scene-photo-label {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      background: rgba(24, 16, 48, 0.85);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.7rem;
+      color: #fdf2f8;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Texto con efecto máquina de escribir */
+    .scene-text {
+      position: relative;
+      min-height: 160px;
+      padding: 16px 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      background: radial-gradient(circle at top left, rgba(244, 114, 182, 0.22), rgba(15, 23, 42, 0.95));
+      overflow: hidden;
+    }
+
+    .scene-text-content {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #fee2e2;
+      white-space: pre-line; /* respeta saltos \n */
+    }
+
+    .scene-text-cursor {
+      display: inline-block;
+      width: 8px;
+      margin-left: 2px;
+      background: #f9a8d4;
+      animation: blink 0.9s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+
+    .scene-progress {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+    }
+
+    .scene-progress span {
+      opacity: 0.4;
+      margin: 0 2px;
+      font-size: 0.7rem;
+    }
+
+    .scene-progress span.active {
+      opacity: 1;
+      color: #f9a8d4;
+    }
+
+    .story-footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #fce7f3;
+    }
+
+    .story-footer-strong {
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Texto que verá ANTES del cumpleaños -->
-    <h1>Algo especial se está preparando… 🎁</h1>
-    <p>Falta muy poquito, no mires antes de tiempo 😌</p>
+  <main class="page">
+    <section class="card" id="card-root">
+      <!-- Sección visible ANTES del cumpleaños -->
+      <div id="countdown-section">
+        <div class="pre-header">Hola chiquita</div>
+        <h1>Ya falta poco para tu cumpleaños ✨</h1>
+        <p class="subtitle">
+          Mmmm no comas ansias, ya falta poco para la sorpresa 🤞🏻
+        </p>
 
-    <!-- Contador -->
-    <div id="countdown">
-      <div class="time-part">
-        <span class="number" id="days">0</span>días
-      </div>
-      <div class="time-part">
-        <span class="number" id="hours">0</span>horas
-      </div>
-      <div class="time-part">
-        <span class="number" id="minutes">0</span>min
-      </div>
-      <div class="time-part">
-        <span class="number" id="seconds">0</span>seg
-      </div>
-    </div>
+        <div class="countdown">
+          <div class="time-box">
+            <div class="time-number" id="days">0</div>
+            <div class="time-label">Días</div>
+          </div>
+          <div class="time-box">
+            <div class="time-number" id="hours">00</div>
+            <div class="time-label">Horas</div>
+          </div>
+          <div class="time-box">
+            <div class="time-number" id="minutes">00</div>
+            <div class="time-label">Min</div>
+          </div>
+          <div class="time-box">
+            <div class="time-number" id="seconds">00</div>
+            <div class="time-label">Seg</div>
+          </div>
+        </div>
 
-    <!-- CONTENIDO DEL CUMPLE (lo editas a tu gusto) -->
-    <div id="birthday-content">
-      <h1>¡Feliz cumpleaños! 🎂✨</h1>
-      <p>
-        Aquí pones todo tu diseño: fotos, animaciones, mensajes largos,
-        lo que normalmente haces en tu HTML bonito.
-      </p>
-      <!-- Puedes pegar aquí el HTML del diseño final -->
-    </div>
-  </div>
+        <p class="hint" id="hint-text">
+          Cada vez más cerca.
+        </p>
+
+        <!-- FOTOS PREVIEW PARA EL PRE-CUMPLE -->
+        <div class="photos-row">
+          <figure class="photo">
+            <img src="img/foto1.jpg" alt="Recuerdo 1" />
+            <figcaption class="photo-label">26/10/2024</figcaption>
+          </figure>
+          <figure class="photo">
+            <img src="img/foto2.jpg" alt="Recuerdo 2" />
+            <figcaption class="photo-label">26/05/2025</figcaption>
+          </figure>
+          <figure class="photo">
+            <img src="img/foto3.jpg" alt="Recuerdo 3" />
+            <figcaption class="photo-label">26/06/2026</figcaption>
+          </figure>
+        </div>
+
+        <p class="tiny-note">
+          (Prometo que valdrá la pena la espera).
+        </p>
+
+        <button id="watch-button" class="watch-button hidden">
+          Ver sorpresa <span>▶</span>
+        </button>
+      </div>
+
+      <!-- "Video" de escenas -->
+      <div id="story-container">
+        <div class="scene-title" id="scene-title-text"></div>
+
+        <div class="scene-layout">
+          <div class="scene-photos">
+            <figure class="scene-photo-card" id="photo-card-1">
+              <img id="scene-photo-1" src="img/escena1-1.jpg" alt="Foto 1" />
+              <figcaption class="scene-photo-label" id="scene-photo-label-1">Foto 1</figcaption>
+            </figure>
+            <figure class="scene-photo-card" id="photo-card-2">
+              <img id="scene-photo-2" src="img/escena1-2.jpg" alt="Foto 2" />
+              <figcaption class="scene-photo-label" id="scene-photo-label-2">Foto 2</figcaption>
+            </figure>
+            <figure class="scene-photo-card" id="photo-card-3">
+              <img id="scene-photo-3" src="img/escena1-3.jpg" alt="Foto 3" />
+              <figcaption class="scene-photo-label" id="scene-photo-label-3">Foto 3</figcaption>
+            </figure>
+          </div>
+
+          <div class="scene-text">
+            <div class="scene-text-content" id="scene-text-content"></div>
+            <span class="scene-text-cursor" id="scene-cursor"></span>
+          </div>
+        </div>
+
+        <div class="scene-progress" id="scene-progress-indicator">
+          <span class="active">●</span><span>●</span><span>●</span><span>●</span>
+        </div>
+
+        <div class="story-footer" id="story-footer" style="display:none;">
+          <span class="story-footer-strong">Feliz cumpleaños.</span><br />
+          Gracias por lo que hemos vivido, por lo que viene<br />
+          y por ser exactamente quien eres.
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // 1) AJUSTA AQUÍ la fecha/hora del cumpleaños
-    // Formato: new Date("YYYY-MM-DDTHH:MM:SS")
-    // Ejemplo: 2026-06-29 a las 00:00 (hora de Lima, ajusta según tu caso)
-    const targetDate = new Date("2026-06-29T00:00:00");
+    // AJUSTA AQUÍ la fecha/hora del cumpleaños
+    // Ejemplo: Domingo 28 de junio 2026, 00:00 (hora Lima)
+    const targetDate = new Date("2026-06-28T00:00:00");
 
-    const countdownEl = document.getElementById("countdown");
-    const birthdayContentEl = document.getElementById("birthday-content");
-
+    const bodyEl = document.body;
+    const cardRoot = document.getElementById("card-root");
     const daysEl = document.getElementById("days");
     const hoursEl = document.getElementById("hours");
     const minutesEl = document.getElementById("minutes");
     const secondsEl = document.getElementById("seconds");
+    const hintText = document.getElementById("hint-text");
+    const watchButton = document.getElementById("watch-button");
+
+    const storyContainer = document.getElementById("story-container");
+    const sceneTitleText = document.getElementById("scene-title-text");
+    const sceneTextContent = document.getElementById("scene-text-content");
+    const sceneCursor = document.getElementById("scene-cursor");
+    const sceneProgressIndicator = document.getElementById("scene-progress-indicator");
+    const storyFooter = document.getElementById("story-footer");
+
+    const photo1 = document.getElementById("scene-photo-1");
+    const photo2 = document.getElementById("scene-photo-2");
+    const photo3 = document.getElementById("scene-photo-3");
+    const photoLabel1 = document.getElementById("scene-photo-label-1");
+    const photoLabel2 = document.getElementById("scene-photo-label-2");
+    const photoLabel3 = document.getElementById("scene-photo-label-3");
+
+    const photoCard1 = document.getElementById("photo-card-1");
+    const photoCard2 = document.getElementById("photo-card-2");
+    const photoCard3 = document.getElementById("photo-card-3");
+
+    // Definición de escenas (títulos, textos y fotos)
+    const scenes = [
+      {
+        title: "Antes de ti",
+        text:
+          "Antes de ti mi vida era “aburrida”. Y lo pongo entre comillas porque, en verdad, era una vida bonita: código, proyectos, música mientras programaba, noches largas arreglando bugs que solo yo veía.\n\n" +
+          "Pero aun así sentía que me faltaba algo. Faltaba alguien con quien mandar memes a cualquier hora, alguien a quien contarle las tonterías del día, alguien que hiciera que hasta lo más simple tuviera un poquito más de sentido.\n\n" +
+          "No sabía exactamente qué era lo que faltaba. Hasta que llegaste tú.",
+        photos: [
+          { src: "img/escena1-1.jpg", label: "Mi mundo de código" },
+          { src: "img/escena1-2.jpg", label: "Días de trabajo" },
+          { src: "img/escena1-3.jpg", label: "Esperando a alguien especial" }
+        ]
+      },
+      {
+        title: "Desde que llegaste tú",
+        text:
+          "Desde que llegaste tú, mis días cambiaron. Ahora ya no es solo código y pantallas. Ahora hay risas que se nos escapan en los momentos menos esperados, memes que solo tú y yo entendemos, audios eternos contando cómo nos fue en el día.\n\n" +
+          "Están nuestras fotos, que nunca salen perfectas, pero que me encantan porque sales tú. Están los viajes, las salidas improvisadas, los días de trabajo juntos, los conciertos y todos esos pequeños momentos que ahora se sienten tan nuestros.\n\n" +
+          "También están esas cartas que te he ido escribiendo, una por día, un pedacito de lo que siento en cada hoja. Porque siempre voy a buscar maneras de recordarte cuánto significas para mí y de hacerte feliz, como tú me haces a mí.",
+        photos: [
+          { src: "img/escena2-1.jpg", label: "Tus risas favoritas" },
+          { src: "img/escena2-2.jpg", label: "Fotos imperfectas, recuerdos perfectos" },
+          { src: "img/escena2-3.jpg", label: "Uno de nuestros viajes" }
+        ]
+      },
+      {
+        title: "Hoy es tu cumpleaños",
+        text:
+          "Y hoy no es cualquier día. Hoy es tu cumpleaños, y eso para mí significa celebrar que existes, que estás aquí, y que por alguna razón bonita la vida decidió cruzarte en mi camino.\n\n" +
+          "Gracias por cada risa que me has regalado, por cada mensaje inesperado, por cada “ya, cuéntame” cuando tuve un día pesado. Gracias por hacer que mis días, que ya eran buenos, ahora sean mucho mejores.\n\n" +
+          "Por todo eso, lo único que quiero es que hoy la pases increíble. Que te sientas querida, cuidada, apapachada, y que sepas que detrás de esta pequeña sorpresa hay alguien que piensa mucho en ti y que siempre va a hacer todo lo posible por verte feliz.",
+        photos: [
+          { src: "img/escena3-1.jpg", label: "La cumpleañera más linda" },
+          { src: "img/escena3-2.jpg", label: "Un cumpleaños más, juntos" },
+          { src: "img/escena3-3.jpg", label: "Tu sonrisa, mi lugar seguro" }
+        ]
+      },
+      {
+        title: "A dónde vamos",
+        text:
+          "Lo más bonito de todo es que esto no se queda solo en lo que ya vivimos. Vienen más días, más historias, más momentos que todavía no sabemos cómo serán, pero que ya me ilusionan.\n\n" +
+          "Nos espera Lima, un concierto de Romeo Santos, canciones que vamos a cantar (o gritar) juntos, miradas entre la gente y esa sensación de “no podría estar en un lugar mejor que aquí, contigo”.\n\n" +
+          "Ya compartimos un concierto de Morat, y cada vez que escucho sus canciones me acuerdo de nosotros, de cómo suena todo distinto cuando estoy a tu lado.\n\n" +
+          "Y más adelante, en grande, en mi cabeza suena así: 2027 – Cuzco. No sé qué foto nos va a salir movida, qué chiste interno vamos a inventar allá, ni cuántos recuerdos nuevos vamos a traer de vuelta… Pero sí sé algo: quiero que sigas siendo tú la persona con la que comparto cada plan, cada viaje y cada “y ahora, ¿a dónde vamos?”.",
+        photos: [
+          { src: "img/escena4-1.jpg", label: "Lima y un concierto que nos espera" },
+          { src: "img/escena4-2.jpg", label: "Canciones que suenan a ti" },
+          { src: "img/escena4-3.jpg", label: "2027 · Cuzco (teaser)" }
+        ]
+      }
+    ];
+
+    // Estado del "video"
+    let currentSceneIndex = 0;
+    let currentCharIndex = 0;
+    let typingIntervalId = null;
 
     function updateCountdown() {
       const now = new Date();
-      const diff = targetDate - now;
+      const diff = targetDate.getTime() - now.getTime();
 
       if (diff <= 0) {
-        // Llegó la hora del cumpleaños
-        countdownEl.style.display = "none";
-        birthdayContentEl.style.display = "block";
-        clearInterval(intervalId);
+        daysEl.textContent = "0";
+        hoursEl.textContent = "00";
+        minutesEl.textContent = "00";
+        secondsEl.textContent = "00";
+        hintText.textContent = "Ya puedes ver la sorpresa cuando quieras.";
+        watchButton.classList.remove("hidden");
         return;
       }
 
@@ -117,10 +556,111 @@
       hoursEl.textContent = String(hours).padStart(2, "0");
       minutesEl.textContent = String(minutes).padStart(2, "0");
       secondsEl.textContent = String(seconds).padStart(2, "0");
+
+      if (days === 0 && hours < 6) {
+        hintText.textContent = "Tic tac, vuelve a las 00:00";
+      } else if (days === 0 && hours === 0 && minutes <= 30) {
+        hintText.textContent = "Cuenta regresiva seria: faltan solo minutos.";
+      } else {
+        hintText.textContent = "Cuando el contador llegue a cero, se desbloquea algo hecho solo para ti.";
+      }
     }
 
-    const intervalId = setInterval(updateCountdown, 1000);
-    updateCountdown(); // primera ejecución inmediata
+    function setPhotosForScene(scene) {
+      const [p1, p2, p3] = scene.photos;
+      if (p1) { photo1.src = p1.src; photoLabel1.textContent = p1.label; }
+      if (p2) { photo2.src = p2.src; photoLabel2.textContent = p2.label; }
+      if (p3) { photo3.src = p3.src; photoLabel3.textContent = p3.label; }
+
+      // Reiniciar visibilidad de fotos
+      photoCard1.classList.remove("visible-photo");
+      photoCard2.classList.remove("visible-photo");
+      photoCard3.classList.remove("visible-photo");
+    }
+
+    function updateProgressDots() {
+      const dots = sceneProgressIndicator.querySelectorAll("span");
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === currentSceneIndex);
+      });
+    }
+
+    function startScene(index) {
+      if (index < 0 || index >= scenes.length) return;
+
+      currentSceneIndex = index;
+      currentCharIndex = 0;
+
+      const scene = scenes[index];
+      sceneTitleText.textContent = scene.title;
+      sceneTextContent.textContent = "";
+      setPhotosForScene(scene);
+      updateProgressDots();
+      sceneCursor.style.display = "inline-block";
+      storyFooter.style.display = "none";
+
+      if (typingIntervalId) clearInterval(typingIntervalId);
+
+      const fullText = scene.text;
+      const typingSpeed = 28; // ms por carácter
+
+      typingIntervalId = setInterval(() => {
+        if (currentCharIndex >= fullText.length) {
+          clearInterval(typingIntervalId);
+
+          // Asegurar que todas las fotos estén visibles al final
+          photoCard1.classList.add("visible-photo");
+          photoCard2.classList.add("visible-photo");
+          photoCard3.classList.add("visible-photo");
+
+          if (currentSceneIndex < scenes.length - 1) {
+            setTimeout(() => {
+              startScene(currentSceneIndex + 1);
+            }, 1800);
+          } else {
+            setTimeout(() => {
+              sceneCursor.style.display = "none";
+              storyFooter.style.display = "block";
+            }, 800);
+          }
+          return;
+        }
+
+        const nextChar = fullText[currentCharIndex];
+        sceneTextContent.textContent += nextChar;
+        currentCharIndex++;
+
+        // Progreso para ir mostrando fotos
+        const progress = currentCharIndex / fullText.length;
+        if (progress > 0.25) {
+          photoCard1.classList.add("visible-photo");
+        }
+        if (progress > 0.55) {
+          photoCard2.classList.add("visible-photo");
+        }
+        if (progress > 0.85) {
+          photoCard3.classList.add("visible-photo");
+        }
+      }, typingSpeed);
+    }
+
+    function playStory() {
+      // Activar modo "pantalla nueva"
+      bodyEl.classList.add("story-mode");
+      cardRoot.classList.add("show-story");
+      storyContainer.style.display = "block";
+
+      // Scroll al inicio de la historia
+      storyContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Iniciar desde la primera escena
+      startScene(0);
+    }
+
+    watchButton.addEventListener("click", playStory);
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
