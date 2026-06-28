@@ -209,16 +209,16 @@
       }
     }
 
-    /* Fotos tipo collage */
+    /* Fotos tipo collage (base) */
     .scene-photos {
       position: relative;
-      min-height: 220px;
+      min-height: 230px;
     }
 
     .scene-photo-card {
       position: absolute;
-      width: 65%;
-      max-width: 240px;
+      width: 68%;
+      max-width: 260px;
       border-radius: 18px;
       overflow: hidden;
       border: 1px solid rgba(248, 113, 113, 0.7);
@@ -241,34 +241,52 @@
       display: block;
     }
 
+    /* Posiciones por defecto (escenas 3 y 4) */
     .scene-photo-card:nth-child(1) {
       top: 0;
-      left: 6%;
+      left: 2%;
       transform: rotate(-6deg) scale(0.9);
     }
-
     .scene-photo-card:nth-child(1).visible-photo {
       transform: rotate(-6deg) scale(1);
     }
 
     .scene-photo-card:nth-child(2) {
-      top: 18%;
-      right: 0;
+      top: 16%;
+      right: 4%;
       transform: rotate(4deg) scale(0.9);
     }
-
     .scene-photo-card:nth-child(2).visible-photo {
       transform: rotate(4deg) scale(1);
     }
 
     .scene-photo-card:nth-child(3) {
-      bottom: 0;
-      left: 16%;
+      bottom: -8%;
+      left: 22%;
       transform: rotate(-2deg) scale(0.9);
     }
-
     .scene-photo-card:nth-child(3).visible-photo {
       transform: rotate(-2deg) scale(1);
+    }
+
+    /* Escena 1: más separación 1 y 2, 3 mucho más abajo */
+    .story-scene-0 .scene-photo-card:nth-child(1) {
+      top: 0;
+      left: 0%;
+    }
+    .story-scene-0 .scene-photo-card:nth-child(2) {
+      top: 30%;
+      right: 6%;
+    }
+    .story-scene-0 .scene-photo-card:nth-child(3) {
+      bottom: -28%;
+      left: 20%;
+    }
+
+    /* Escena 2: solo bajar más la 3 */
+    .story-scene-1 .scene-photo-card:nth-child(3) {
+      bottom: -22%;
+      left: 22%;
     }
 
     .scene-photo-label {
@@ -332,14 +350,29 @@
       color: #f9a8d4;
     }
 
-    .story-footer {
-      margin-top: 18px;
+    /* Escena final (escena 5) */
+    .final-scene {
+      margin-top: 26px;
       text-align: center;
-      font-size: 0.9rem;
+      display: none;
+    }
+
+    .final-scene img {
+      max-width: 260px;
+      width: 70%;
+      border-radius: 18px;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.8);
+      margin-bottom: 14px;
+    }
+
+    .final-scene-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
       color: #fce7f3;
     }
 
-    .story-footer-strong {
+    .final-scene-text .story-footer-strong {
       font-weight: 600;
     }
   </style>
@@ -407,7 +440,7 @@
       <div id="story-container">
         <div class="scene-title" id="scene-title-text"></div>
 
-        <div class="scene-layout">
+        <div class="scene-layout" id="scene-layout">
           <div class="scene-photos">
             <figure class="scene-photo-card" id="photo-card-1">
               <img id="scene-photo-1" src="img/escena1-1.jpg" alt="Foto 1" />
@@ -433,11 +466,15 @@
           <span class="active">●</span><span>●</span><span>●</span><span>●</span>
         </div>
 
-        <div class="story-footer" id="story-footer" style="display:none;">
-          <span class="story-footer-strong">Feliz cumpleaños.</span><br />
-          Gracias por lo que hemos vivido, por lo que viene<br />
-          y por ser exactamente quien eres. <br />
-          Atte: Tu soporte 24/7
+        <!-- Escena 5: bloque final -->
+        <div id="final-scene" class="final-scene">
+          <img src="img/escena5.jpg" alt="Nosotros" />
+          <div class="final-scene-text">
+            <span class="story-footer-strong">Feliz cumpleaños.</span><br />
+            Gracias por lo que hemos vivido, por lo que viene<br />
+            y por ser exactamente quien eres. <br />
+            Atte: Tu soporte 24/7
+          </div>
         </div>
       </div>
     </section>
@@ -445,8 +482,7 @@
 
   <script>
     // AJUSTA AQUÍ la fecha/hora del cumpleaños
-    // Ejemplo: Domingo 28 de junio 2026, 00:00 (hora Lima)
-    const targetDate = new Date("2026-06-27T00:00:00");
+    const targetDate = new Date("2026-06-28T00:00:00");
 
     const bodyEl = document.body;
     const cardRoot = document.getElementById("card-root");
@@ -462,7 +498,8 @@
     const sceneTextContent = document.getElementById("scene-text-content");
     const sceneCursor = document.getElementById("scene-cursor");
     const sceneProgressIndicator = document.getElementById("scene-progress-indicator");
-    const storyFooter = document.getElementById("story-footer");
+    const sceneLayout = document.getElementById("scene-layout");
+    const finalScene = document.getElementById("final-scene");
 
     const photo1 = document.getElementById("scene-photo-1");
     const photo2 = document.getElementById("scene-photo-2");
@@ -505,7 +542,7 @@
         title: "Feliz cumpleaños",
         text:
           "Y hoy no es cualquier día. Hoy es tu cumpleaños, y eso para mí significa celebrar que existes, que estás aquí, y que por alguna razón bonita la vida decidió cruzarte en mi camino.\n\n" +
-          "Gracias por cada risa que me has regalado, por cada mensaje inesperado, por cada “ya, cuéntame” cuando tuve un día pesado. Gracias por hacer que mis días, que ya eran buenos, ahora sean mucho mejores.\n\n" +
+          "Gracias por cada risa que me has regalado, por cada mensaje inesperado, por cada “como vas?”, “plena confianza en ti”,  cuando tuve un día pesado. Gracias por hacer que mis días, que ya eran buenos, ahora sean mucho mejores.\n\n" +
           "Por todo eso, lo único que quiero es que hoy la pases increíble. Que te sientas querida, cuidada, engreída, y que sepas que detrás de esta pequeña sorpresa hay alguien que piensa mucho en ti y que siempre va a hacer todo lo posible por verte feliz.",
         photos: [
           { src: "img/escena3-1.jpg", label: "La cumpleañera más linda" },
@@ -589,6 +626,10 @@
     function startScene(index) {
       if (index < 0 || index >= scenes.length) return;
 
+      // Clase para posiciones específicas por escena
+      storyContainer.classList.remove("story-scene-0", "story-scene-1", "story-scene-2", "story-scene-3");
+      storyContainer.classList.add(`story-scene-${index}`);
+
       currentSceneIndex = index;
       currentCharIndex = 0;
 
@@ -598,12 +639,14 @@
       setPhotosForScene(scene);
       updateProgressDots();
       sceneCursor.style.display = "inline-block";
-      storyFooter.style.display = "none";
+      finalScene.style.display = "none";
+      sceneLayout.style.display = "grid";
+      sceneProgressIndicator.style.display = "block";
 
       if (typingIntervalId) clearInterval(typingIntervalId);
 
       const fullText = scene.text;
-      const typingSpeed = 28; // ms por carácter
+      const typingSpeed = 40; // ms por carácter
 
       typingIntervalId = setInterval(() => {
         if (currentCharIndex >= fullText.length) {
@@ -615,14 +658,19 @@
           photoCard3.classList.add("visible-photo");
 
           if (currentSceneIndex < scenes.length - 1) {
+            // Pausa más larga antes de la siguiente escena
             setTimeout(() => {
               startScene(currentSceneIndex + 1);
-            }, 1800);
+            }, 5000);
           } else {
+            // Escena 4 terminada -> mostrar escena 5 (final SOLO)
             setTimeout(() => {
               sceneCursor.style.display = "none";
-              storyFooter.style.display = "block";
-            }, 800);
+              sceneLayout.style.display = "none";
+              sceneProgressIndicator.style.display = "none";
+              finalScene.style.display = "block";
+              finalScene.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 2000);
           }
           return;
         }
